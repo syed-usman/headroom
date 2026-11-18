@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Headroom — Reclaim Your Mac's Ghost Storage with APFS Forensics</title>
+  <meta name="description" content="The open, safety-first macOS disk reclaimer. Forensically audits the mysterious '130 GB System Data', estimates rebuild costs, and safely quarantines files before deletion.">
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Glow & Grid -->
+  <div class="bg-gradient-glow top-left"></div>
+  <div class="bg-gradient-glow center-right"></div>
+  <div class="bg-grid-overlay"></div>
+
+  <!-- Header / Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <img src="assets/icon.png" alt="Headroom Logo" class="nav-logo">
+        <span class="nav-title">Headroom</span>
+        <span class="nav-version">v0.1</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#system-data">The 130GB Mystery</a>
+        <a href="#quarantine">Quarantine Vault</a>
+        <a href="#compare">Compare</a>
+        <a href="#cli">CLI</a>
+        <a href="https://github.com/syedusman/headroom" target="_blank" class="nav-gh-link">
+          <svg class="gh-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+
+      <div class="nav-cta">
+        <a href="downloads/Headroom.dmg" class="btn btn-sm btn-primary download-trigger">
+          <svg class="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download .dmg</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container hero-content">
+      <div class="badge-pill">
+        <span class="pill-pulse"></span>
+        <span class="pill-text">Headroom v0.1 Public Preview • macOS Sonoma & Sequoia</span>
+      </div>
+
+      <h1 class="hero-title">
+        Take back your Mac's<br>
+        <span class="gradient-text">ghost storage.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Finder tells you that <strong>130 GB is locked in "System Data"</strong> with zero explanation. 
+        Headroom uses native APFS container forensics to reveal the truth, calculates the exact rebuild cost of caches, and protects your work with a 7-day undo quarantine.
+      </p>
+
+      <div class="hero-actions">
+        <a href="downloads/Headroom.dmg" class="btn btn-lg btn-primary download-trigger">
+          <svg class="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <div class="btn-text-group">
+            <span class="btn-main-text">Download Headroom.dmg</span>
+            <span class="btn-sub-text">macOS 14.0+ • Apple Silicon & Intel • Universal</span>
+          </div>
+        </a>
+
+        <div class="terminal-copy-box" onclick="copyInstallCmd()">
+          <span class="prompt">$</span>
+          <code id="install-cmd">brew install headroom</code>
+          <button class="copy-btn" title="Copy to clipboard" aria-label="Copy command">
+            <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="hero-pills">
+        <div class="trust-item"><span class="check-icon">✓</span> 100% Native Swift 5.10</div>
+        <div class="trust-item"><span class="check-icon">✓</span> Zero Telemetry / Works Offline</div>
+        <div class="trust-item"><span class="check-icon">✓</span> 7-Day Local Quarantine Undo</div>
+        <div class="trust-item"><span class="check-icon">✓</span> Open Community Rules</div>
+      </div>
+
+      <!-- Interactive App Preview Window -->
+      <div class="app-window-preview">
+        <div class="window-chrome">
+          <div class="traffic-lights">
+            <span class="dot close"></span>
+            <span class="dot minimize"></span>
+            <span class="dot zoom"></span>
+          </div>
+          <div class="window-titlebar">
+            <span class="window-title">Headroom — APFS Container Forensics (494.4 GB)</span>
+          </div>
+          <div class="window-actions">
+            <span class="window-badge">360.1 GB USED • 134.3 GB FREE</span>
+          </div>
+        </div>
+
+        <!-- App Nav Tabs -->
+        <div class="app-mock-tabs">
+          <button class="mock-tab active" onclick="switchMockTab('ledger')">
+            <span class="step-num">01</span> AUDIT LEDGER
+          </button>
+          <button class="mock-tab" onclick="switchMockTab('reclaim')">
+            <span class="step-num">02</span> RECLAIM SPACE <span class="tab-badge">24.8 GB</span>
+          </button>
+          <button class="mock-tab" onclick="switchMockTab('quarantine')">
+            <span class="step-num">03</span> QUARANTINE VAULT
+          </button>
+        </div>
+
+        <!-- Tab 1: Audit Ledger -->
+        <div id="tab-ledger" class="mock-tab-content active">
+          <div class="ledger-summary-grid">
+            <div class="ledger-stat-card">
+              <span class="stat-label">TOTAL CONTAINER</span>
+              <span class="stat-value">494.4 GB</span>
+              <span class="stat-sub">Physical APFS Container</span>
+            </div>
+            <div class="ledger-stat-card">
+              <span class="stat-label">USED ALLOCATIONS</span>
+              <span class="stat-value text-used">360.1 GB</span>
+              <span class="stat-sub">72.8% Capacity</span>
+            </div>
+            <div class="ledger-stat-card highlight">
+              <span class="stat-label">RECLAIMABLE TARGETS</span>
+              <span class="stat-value text-reclaim">24.8 GB</span>
+              <span class="stat-sub">Zero Impact on OS Stability</span>
+            </div>
+            <div class="ledger-stat-card">
+              <span class="stat-label">AVAILABLE HEADROOM</span>
+              <span class="stat-value text-free">134.3 GB</span>
+              <span class="stat-sub">27.2% Unallocated</span>
+            </div>
+          </div>
+
+          <!-- Bar Visualizer -->
+          <div class="container-bar-visualizer">
+            <div class="bar-segment bar-sealed" style="width: 3.5%;" title="Sealed System: 12.6 GB"></div>
+            <div class="bar-segment bar-preboot" style="width: 2.5%;" title="Preboot/Cryptex: 9.0 GB"></div>
+            <div class="bar-segment bar-vm" style="width: 1.0%;" title="VM Swap: 2.1 GB"></div>
+            <div class="bar-segment bar-apps" style="width: 2.5%;" title="Applications: 8.8 GB"></div>
+            <div class="bar-segment bar-user" style="width: 56.5%;" title="User Data & Repos: ~280 GB"></div>
+            <div class="bar-segment bar-reclaimable" style="width: 6.8%;" title="Reclaimable Caches: 24.8 GB"></div>
+            <div class="bar-segment bar-free" style="width: 27.2%;" title="Free Headroom: 134.3 GB"></div>
+          </div>
+
+          <div class="bar-legend">
+            <span class="legend-item"><span class="legend-color sealed"></span> Sealed OS (12.6 GB)</span>
+            <span class="legend-item"><span class="legend-color preboot"></span> Cryptexes (9.0 GB)</span>
+            <span class="legend-item"><span class="legend-color vm"></span> Swap VM (2.1 GB)</span>
+            <span class="legend-item"><span class="legend-color user"></span> User Repos (280 GB)</span>
+            <span class="legend-item"><span class="legend-color reclaimable"></span> Reclaimable Caches (24.8 GB)</span>
+            <span class="legend-item"><span class="legend-color free"></span> Free Space (134.3 GB)</span>
+          </div>
+        </div>
+
+        <!-- Tab 2: Reclaim Space -->
+        <div id="tab-reclaim" class="mock-tab-content">
+          <div class="reclaim-header">
+            <div class="reclaim-title-box">
+              <span class="reclaim-heading">24.8 GB In 7 Cleanable Buckets</span>
+              <span class="reclaim-subtext">Grouped by safety tier with estimated rebuild cost</span>
+            </div>
+            <button class="btn btn-sm btn-primary">SELECT ALL TARGETS (24.8 GB)</button>
+          </div>
+
+          <div class="mock-targets-list">
+            <div class="target-row">
+              <input type="checkbox" checked disabled>
+              <div class="target-info">
+                <span class="target-name">Xcode DerivedData & Module Caches</span>
+                <span class="target-path">~/Library/Developer/Xcode/DerivedData</span>
+              </div>
+              <div class="target-cost">
+                <span class="cost-badge rebuild">⏱ Rebuild: ~3.5 min</span>
+                <span class="cost-badge dl">🌐 Redownload: 0 MB</span>
+              </div>
+              <span class="target-size">14.2 GB</span>
+            </div>
+
+            <div class="target-row">
+              <input type="checkbox" checked disabled>
+              <div class="target-info">
+                <span class="target-name">Docker / OrbStack Build Caches & Dangling Layers</span>
+                <span class="target-path">~/Library/Containers/com.docker.docker</span>
+              </div>
+              <div class="target-cost">
+                <span class="cost-badge rebuild">⏱ Rebuild: ~45 s</span>
+                <span class="cost-badge dl">🌐 Redownload: ~1.2 GB</span>
+              </div>
+              <span class="target-size">6.4 GB</span>
+            </div>
+
+            <div class="target-row">
+              <input type="checkbox" checked disabled>
+              <div class="target-info">
+                <span class="target-name">iOS Simulator Runtimes & Orphaned Devices</span>
+                <span class="target-path">~/Library/Developer/CoreSimulator/Devices</span>
+              </div>
+              <div class="target-cost">
+                <span class="cost-badge safe">✓ Safe to recreate</span>
+              </div>
+              <span class="target-size">2.8 GB</span>
+            </div>
+
+            <div class="target-row">
+              <input type="checkbox" checked disabled>
+              <div class="target-info">
+                <span class="target-name">Homebrew Bottle Cache & Old Tarballs</span>
+                <span class="target-path">~/Library/Caches/Homebrew</span>
+              </div>
+              <div class="target-cost">
+                <span class="cost-badge safe">✓ Stale downloads</span>
+              </div>
+              <span class="target-size">1.4 GB</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Quarantine Vault -->
+        <div id="tab-quarantine" class="mock-tab-content">
+          <div class="quarantine-hero-box">
+            <div class="quarantine-shield-icon">🛡️</div>
+            <div class="quarantine-hero-text">
+              <h3>7-Day Quarantine Safety Guarantee</h3>
+              <p>Items cleaned by Headroom are moved to <code>~/.headroom/quarantine/</code> instead of permanently deleted. You can restore any item with a single click before the retention window expires.</p>
+            </div>
+          </div>
+
+          <div class="quarantine-items-list">
+            <div class="quarantine-card">
+              <div class="q-header">
+                <span class="q-title">DerivedData (Auto-isolated 2 hours ago)</span>
+                <span class="q-badge">Expires in 6 days 22 hours</span>
+              </div>
+              <div class="q-details">
+                <span>Original: ~/Library/Developer/Xcode/DerivedData</span>
+                <span class="q-size">14.2 GB</span>
+              </div>
+              <div class="q-actions">
+                <button class="btn btn-xs btn-outline">↺ 1-Click Restore to Original Path</button>
+                <button class="btn btn-xs btn-danger">Purge Permanently</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Section: The 130 GB Mystery Solved -->
+  <section id="system-data" class="section">
+    <div class="container">
+      <div class="section-badge">APFS CONTAINER FORENSICS</div>
+      <h2 class="section-title">The "130 GB System Data" enigma, solved.</h2>
+      <p class="section-subtitle">
+        Every Mac user has opened <em>System Settings &gt; General &gt; Storage</em> only to stare helplessly at a massive 100+ GB gray bar. Here is what Apple doesn't show you:
+      </p>
+
+      <div class="mystery-grid">
+        <div class="mystery-card">
+          <div class="mystery-icon">🔒</div>
+          <h3>1. Sealed System Volume (SSV)</h3>
+          <p class="mystery-spec">~12.6 GB • Bit-for-bit immutable</p>
+          <p>macOS boots from a cryptographically signed APFS snapshot. The actual operating system files are completely read-only and sealed. They cannot grow, become fragmented, or get infected.</p>
+        </div>
+
+        <div class="mystery-card">
+          <div class="mystery-icon">🚀</div>
+          <h3>2. Cryptexes & Preboot</h3>
+          <p class="mystery-spec">~9.0 GB • OS Security & Micro-updates</p>
+          <p>Rapid Security Responses and Safari updates live in dynamic "Cryptex" volumes so Apple doesn't have to rebuild the entire SSV snapshot on minor updates. Crucial for boot execution.</p>
+        </div>
+
+        <div class="mystery-card">
+          <div class="mystery-icon">⚡</div>
+          <h3>3. Dynamic VM Swap</h3>
+          <p class="mystery-spec">~2.1 GB to 20 GB • Ephemeral RAM spillover</p>
+          <p>Apple Silicon's unified memory swaps dynamically into the APFS VM volume. It grows under heavy load and shrinks upon reboot. Not a leak, but vital scratchpad headroom.</p>
+        </div>
+
+        <div class="mystery-card highlight-card">
+          <div class="mystery-icon">💥</div>
+          <h3>4. Runaway Developer Caches</h3>
+          <p class="mystery-spec">30 GB to 150+ GB • The Real Culprit</p>
+          <p>Finder lumps Docker raw disks, Xcode DerivedData, Ollama/HuggingFace model weights, Simulator runtimes, and Gradle jars into "System Data" because they live in <code>~/Library</code>. <strong>This is what Headroom reclaims.</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Rebuild Cost & Safety -->
+  <section id="features" class="section bg-darker">
+    <div class="container">
+      <div class="section-badge">SAFETY FIRST ARCHITECTURE</div>
+      <h2 class="section-title">Engineered for developers who can't afford broken builds.</h2>
+      <p class="section-subtitle">
+        Standard cleaners run reckless <code>rm -rf</code> on your project files. Headroom was built by engineers with three strict principles:
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Rebuild Cost Metrics</h3>
+          <p>Cleaning 20 GB of build caches might feel great until your next compilation takes 45 minutes and consumes your hotspot data. Headroom calculates compile time and redownload bandwidth <em>before</em> you clean.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>7-Day Quarantine Undo</h3>
+          <p>Accidentally cleaned an old client build configuration? Don't panic. Headroom isolates files into a local time-stamped quarantine directory. Restore them with one click or let them auto-expire.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </div>
+          <h3>Dual SwiftUI + CLI Engine</h3>
+          <p>Use the luxury SwiftUI desktop application for visual workflows, or run <code>headroom scan</code> and <code>headroom clean</code> in automated terminal scripts, cron jobs, and CI environments.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3>Zero Sandboxing Compromises</h3>
+          <p>Mac App Store apps are trapped in sandbox silos and cannot read developer directories or manage APFS snapshots. Headroom is distributed notarized with Full Disk Access transparency.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Headroom vs Competitors -->
+  <section id="compare" class="section">
+    <div class="container">
+      <div class="section-badge">TRANSPARENCY REPORT</div>
+      <h2 class="section-title">Headroom vs Traditional Mac Cleaners</h2>
+      <p class="section-subtitle">Why open-source APFS forensics beats black-box subscription cleaners every time.</p>
+
+      <div class="table-responsive">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="headroom-col">Headroom</th>
+              <th>CleanMyMac X</th>
+              <th>DaisyDisk</th>
+              <th>OmniDiskSweeper</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Pricing Model</strong></td>
+              <td class="headroom-col highlight-cell">Free & Open Source (Direct DMG)</td>
+              <td>$39.95 / year subscription</td>
+              <td>$9.99 one-time</td>
+              <td>Free</td>
+            </tr>
+            <tr>
+              <td><strong>Rebuild Cost Calculation</strong></td>
+              <td class="headroom-col highlight-cell">✓ Yes (CPU Time + Network Size)</td>
+              <td>✗ No (Raw bytes only)</td>
+              <td>✗ No</td>
+              <td>✗ No</td>
+            </tr>
+            <tr>
+              <td><strong>7-Day Local Quarantine & Undo</strong></td>
+              <td class="headroom-col highlight-cell">✓ Full 1-Click Atomic Restore</td>
+              <td>✗ Permanent Deletion</td>
+              <td>✗ Permanent Deletion</td>
+              <td>✗ Permanent Deletion</td>
+            </tr>
+            <tr>
+              <td><strong>APFS Container Forensics</strong></td>
+              <td class="headroom-col highlight-cell">✓ True container & snapshot ledger</td>
+              <td>✗ Basic volume stats</td>
+              <td>✓ Visual sunburst</td>
+              <td>✗ File list only</td>
+            </tr>
+            <tr>
+              <td><strong>CLI Terminal Included</strong></td>
+              <td class="headroom-col highlight-cell">✓ Yes (<code>headroom</code> executable)</td>
+              <td>✗ No</td>
+              <td>✗ No</td>
+              <td>✗ No</td>
+            </tr>
+            <tr>
+              <td><strong>Telemetry & Privacy</strong></td>
+              <td class="headroom-col highlight-cell">✓ 0 Telemetry / Offline Native</td>
+              <td>✗ Heavy analytics tracking</td>
+              <td>~ Minimal analytics</td>
+              <td>✓ Minimal</td>
+            </tr>
+            <tr>
+              <td><strong>Community Rule Contributions</strong></td>
+              <td class="headroom-col highlight-cell">✓ Open Git PRs / Swift & JSON</td>
+              <td>✗ Closed proprietary rules</td>
+              <td>✗ Closed</td>
+              <td>✗ Closed</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: CLI Documentation -->
+  <section id="cli" class="section bg-darker">
+    <div class="container">
+      <div class="section-badge">TERMINAL FIRST</div>
+      <h2 class="section-title">Command-line power for keyboard warriors.</h2>
+      <p class="section-subtitle">
+        Headroom packages a standalone compiled binary alongside the SwiftUI app. Script your morning cleanup or audit CI runners with ease.
+      </p>
+
+      <div class="terminal-showcase">
+        <div class="terminal-tabs">
+          <button class="term-tab active" onclick="switchTermTab('scan')">headroom scan</button>
+          <button class="term-tab" onclick="switchTermTab('ledger')">headroom ledger</button>
+          <button class="term-tab" onclick="switchTermTab('clean')">headroom clean --dry-run</button>
+          <button class="term-tab" onclick="switchTermTab('undo')">headroom undo</button>
+        </div>
+
+        <div id="term-scan" class="term-body active">
+<pre><code><span class="cmd-prompt">$</span> <span class="cmd-run">headroom scan</span>
+🔍 Scanning system and developer caches...
+
+[+] Found 24.8 GB across 7 cleanable targets:
+  <span class="badge-t1">[T1: Safe]</span> Xcode DerivedData:         14.2 GB  (Rebuild: ~3.5 min, DL: 0 MB)
+  <span class="badge-t1">[T1: Safe]</span> CocoaPods Pods Cache:       2.1 GB  (Rebuild: ~1.2 min, DL: ~800 MB)
+  <span class="badge-t2">[T2: Redownload]</span> Docker Dangling Img:  6.4 GB  (Rebuild: ~45 s,   DL: ~1.2 GB)
+  <span class="badge-t1">[T1: Safe]</span> Homebrew Downloads:         1.4 GB  (Rebuild: 0 s,     DL: 0 MB)
+  <span class="badge-t1">[T1: Safe]</span> Gradle Caches:              0.7 GB  (Rebuild: ~2.0 min, DL: ~500 MB)
+
+✨ Run <span class="cmd-highlight">headroom clean --dry-run</span> to preview plan or <span class="cmd-highlight">headroom clean</span> to isolate to quarantine.</code></pre>
+        </div>
+
+        <div id="term-ledger" class="term-body">
+<pre><code><span class="cmd-prompt">$</span> <span class="cmd-run">headroom ledger</span>
+==================================================
+           HEADROOM APFS CONTAINER LEDGER          
+==================================================
+Container Total:        494.4 GB
+Used Allocations:       360.1 GB (72.8%)
+Available Headroom:     134.3 GB (27.2%)
+
+--- System Volume Breakdown ---
+  • Sealed System (SSV): 12.6 GB (Immutable OS)
+  • Preboot / Cryptex:    9.0 GB (Boot security)
+  • Dynamic VM Swap:      2.1 GB (RAM spillover)
+  • User Applications:    8.8 GB
+  • Developer & User:   327.6 GB (~24.8 GB cleanable)
+==================================================</code></pre>
+        </div>
+
+        <div id="term-clean" class="term-body">
+<pre><code><span class="cmd-prompt">$</span> <span class="cmd-run">headroom clean --dry-run</span>
+⚡ DRY RUN: Simulating safe cleanup plan...
+
+Target: Xcode DerivedData (14.2 GB) -> Staging to quarantine
+Target: Docker Dangling Img (6.4 GB) -> Staging to quarantine
+Target: Homebrew Downloads (1.4 GB)  -> Staging to quarantine
+
+Summary:
+  • Total space to reclaim: 22.0 GB
+  • Files isolated to: ~/.headroom/quarantine/2026-11-18_14-45-00/
+  • Rebuild cost incurred: ~4.2 min CPU compilation, ~1.2 GB re-downloads
+  • Instant Undo: headroom undo &lt;record-id&gt;</code></pre>
+        </div>
+
+        <div id="term-undo" class="term-body">
+<pre><code><span class="cmd-prompt">$</span> <span class="cmd-run">headroom undo</span>
+ACTIVE QUARANTINE VAULT RECORDS:
+[1] ID: rec_9f81a7 • Cleaned: Today 14:45 • Size: 22.0 GB • Status: Quarantined (Expires in 7 days)
+    Items: Xcode DerivedData, Docker Dangling, Homebrew
+
+To restore an item back to its original filesystem path:
+  $ headroom undo rec_9f81a7
+
+To permanently release APFS storage blocks immediately:
+  $ headroom purge</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Download CTA Banner -->
+  <section class="section cta-section">
+    <div class="container cta-box">
+      <div class="cta-glow"></div>
+      <img src="assets/icon.png" alt="Headroom" class="cta-app-icon">
+      <h2>Ready to reclaim your Mac's storage safely?</h2>
+      <p>Download the free DMG, inspect your APFS container in 3 seconds, and never wonder about System Data again.</p>
+
+      <div class="cta-buttons">
+        <a href="downloads/Headroom.dmg" class="btn btn-lg btn-primary download-trigger">
+          <svg class="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download Headroom.dmg</span>
+        </a>
+        <a href="https://github.com/syedusman/headroom" target="_blank" class="btn btn-lg btn-secondary">
+          <svg class="gh-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>Star on GitHub</span>
+        </a>
+      </div>
+
+      <div class="cta-footnote">
+        Compatible with macOS 14.0 Sonoma & macOS 15.0+ Sequoia. Free & Open Source under the MIT License.
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <img src="assets/icon.png" alt="Headroom" class="footer-logo">
+          <span>Headroom</span>
+        </div>
+        <p class="footer-desc">
+          APFS Container Forensics, Rebuild Cost Metrics, and 7-Day Quarantine Vault for macOS.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-group">
+          <h4>Product</h4>
+          <a href="downloads/Headroom.dmg">Download DMG</a>
+          <a href="#features">Features</a>
+          <a href="#system-data">System Data Ledger</a>
+          <a href="#cli">CLI Reference</a>
+        </div>
+        <div class="footer-group">
+          <h4>Open Source</h4>
+          <a href="https://github.com/syedusman/headroom" target="_blank">GitHub Repository</a>
+          <a href="https://github.com/syedusman/headroom/blob/main/SPEC.md" target="_blank">Technical Spec</a>
+          <a href="https://github.com/syedusman/headroom/blob/main/CONTRIBUTING.md" target="_blank">Rules Contribution</a>
+          <a href="https://github.com/syedusman/headroom/blob/main/LICENSE" target="_blank">MIT License</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>© 2026 Headroom Contributors. Crafted with precision for macOS developers.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

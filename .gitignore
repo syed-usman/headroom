@@ -1,0 +1,11 @@
+.DS_Store
+/.build/
+/Packages/
+xcuserdata/
+DerivedData/
+.swiftpm/
+/Headroom.dmg
+Headroom.app/
+/tmp/
+*.swp
+*~
