@@ -21,7 +21,7 @@ Requirements: macOS 14.0+, Swift 5.10+, Xcode Command Line Tools.
 
 ```bash
 # Clone the repository
-git clone https://github.com/syedusman/headroom.git
+git clone https://github.com/syed-usman/headroom.git
 cd headroom
 
 # Compile the core library, CLI, and SwiftUI bundle
