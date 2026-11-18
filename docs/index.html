@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Headroom — Reclaim Your Mac's Ghost Storage with APFS Forensics</title>
-  <meta name="description" content="The open, safety-first macOS disk reclaimer. Forensically audits the mysterious '130 GB System Data', estimates rebuild costs, and safely quarantines files before deletion.">
+  <meta name="description" content="The open, safety-first macOS disk reclaimer. Forensically audits mysterious System Data bloat, estimates rebuild costs, and safely quarantines files before deletion.">
   <link rel="icon" type="image/png" href="assets/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,7 +28,7 @@
 
       <div class="nav-links">
         <a href="#features">Features</a>
-        <a href="#system-data">The 130GB Mystery</a>
+        <a href="#system-data">System Data Mystery</a>
         <a href="#quarantine">Quarantine Vault</a>
         <a href="#compare">Compare</a>
         <a href="https://github.com/syed-usman/headroom" target="_blank" class="nav-gh-link">
@@ -60,8 +60,8 @@
       </h1>
 
       <p class="hero-subtitle">
-        Finder tells you that <strong>130 GB is locked in "System Data"</strong> with zero explanation. 
-        Headroom uses native APFS container forensics to reveal the truth, calculates the exact rebuild cost of caches, and protects your work with a 7-day undo quarantine.
+        macOS Storage Settings locks <strong>tens or hundreds of gigabytes into an unexplained "System Data" block</strong> with zero breakdown. 
+        Headroom uses native APFS container forensics to reveal what's inside, calculates the exact rebuild cost of caches, and protects your work with a 7-day undo quarantine.
       </p>
 
       <div class="hero-actions">
@@ -96,10 +96,10 @@
             <span class="dot zoom"></span>
           </div>
           <div class="window-titlebar">
-            <span class="window-title">Headroom — APFS Container Forensics (494.4 GB)</span>
+            <span class="window-title">Headroom — APFS Container Forensics (500.0 GB)</span>
           </div>
           <div class="window-actions">
-            <span class="window-badge">360.1 GB USED • 134.3 GB FREE</span>
+            <span class="window-badge">320.0 GB USED • 180.0 GB FREE</span>
           </div>
         </div>
 
@@ -109,7 +109,7 @@
             <span class="step-num">01</span> AUDIT LEDGER
           </button>
           <button class="mock-tab" onclick="switchMockTab('reclaim')">
-            <span class="step-num">02</span> RECLAIM SPACE <span class="tab-badge">24.8 GB</span>
+            <span class="step-num">02</span> RECLAIM SPACE <span class="tab-badge">38.5 GB</span>
           </button>
           <button class="mock-tab" onclick="switchMockTab('quarantine')">
             <span class="step-num">03</span> QUARANTINE VAULT
@@ -121,44 +121,44 @@
           <div class="ledger-summary-grid">
             <div class="ledger-stat-card">
               <span class="stat-label">TOTAL CONTAINER</span>
-              <span class="stat-value">494.4 GB</span>
+              <span class="stat-value">500.0 GB</span>
               <span class="stat-sub">Physical APFS Container</span>
             </div>
             <div class="ledger-stat-card">
               <span class="stat-label">USED ALLOCATIONS</span>
-              <span class="stat-value text-used">360.1 GB</span>
-              <span class="stat-sub">72.8% Capacity</span>
+              <span class="stat-value text-used">320.0 GB</span>
+              <span class="stat-sub">64.0% Capacity</span>
             </div>
             <div class="ledger-stat-card highlight">
               <span class="stat-label">RECLAIMABLE TARGETS</span>
-              <span class="stat-value text-reclaim">24.8 GB</span>
+              <span class="stat-value text-reclaim">38.5 GB</span>
               <span class="stat-sub">Zero Impact on OS Stability</span>
             </div>
             <div class="ledger-stat-card">
               <span class="stat-label">AVAILABLE HEADROOM</span>
-              <span class="stat-value text-free">134.3 GB</span>
-              <span class="stat-sub">27.2% Unallocated</span>
+              <span class="stat-value text-free">180.0 GB</span>
+              <span class="stat-sub">36.0% Unallocated</span>
             </div>
           </div>
 
           <!-- Bar Visualizer -->
           <div class="container-bar-visualizer">
-            <div class="bar-segment bar-sealed" style="width: 3.5%;" title="Sealed System: 12.6 GB"></div>
-            <div class="bar-segment bar-preboot" style="width: 2.5%;" title="Preboot/Cryptex: 9.0 GB"></div>
-            <div class="bar-segment bar-vm" style="width: 1.0%;" title="VM Swap: 2.1 GB"></div>
-            <div class="bar-segment bar-apps" style="width: 2.5%;" title="Applications: 8.8 GB"></div>
-            <div class="bar-segment bar-user" style="width: 56.5%;" title="User Data & Repos: ~280 GB"></div>
-            <div class="bar-segment bar-reclaimable" style="width: 6.8%;" title="Reclaimable Caches: 24.8 GB"></div>
-            <div class="bar-segment bar-free" style="width: 27.2%;" title="Free Headroom: 134.3 GB"></div>
+            <div class="bar-segment bar-sealed" style="width: 3%;" title="Sealed System: 12.6 GB"></div>
+            <div class="bar-segment bar-preboot" style="width: 2%;" title="Preboot/Cryptex: 9.0 GB"></div>
+            <div class="bar-segment bar-vm" style="width: 1%;" title="VM Swap: 2.5 GB"></div>
+            <div class="bar-segment bar-apps" style="width: 5%;" title="Applications: 25.0 GB"></div>
+            <div class="bar-segment bar-user" style="width: 53%;" title="User Data & Repos: ~265 GB"></div>
+            <div class="bar-segment bar-reclaimable" style="width: 8%;" title="Reclaimable Caches: 38.5 GB"></div>
+            <div class="bar-segment bar-free" style="width: 36%;" title="Free Headroom: 180.0 GB"></div>
           </div>
 
           <div class="bar-legend">
             <span class="legend-item"><span class="legend-color sealed"></span> Sealed OS (12.6 GB)</span>
             <span class="legend-item"><span class="legend-color preboot"></span> Cryptexes (9.0 GB)</span>
-            <span class="legend-item"><span class="legend-color vm"></span> Swap VM (2.1 GB)</span>
-            <span class="legend-item"><span class="legend-color user"></span> User Repos (280 GB)</span>
-            <span class="legend-item"><span class="legend-color reclaimable"></span> Reclaimable Caches (24.8 GB)</span>
-            <span class="legend-item"><span class="legend-color free"></span> Free Space (134.3 GB)</span>
+            <span class="legend-item"><span class="legend-color vm"></span> Swap VM (2.5 GB)</span>
+            <span class="legend-item"><span class="legend-color user"></span> User Data (~265 GB)</span>
+            <span class="legend-item"><span class="legend-color reclaimable"></span> Reclaimable Caches (38.5 GB)</span>
+            <span class="legend-item"><span class="legend-color free"></span> Free Space (180.0 GB)</span>
           </div>
         </div>
 
@@ -166,10 +166,10 @@
         <div id="tab-reclaim" class="mock-tab-content">
           <div class="reclaim-header">
             <div class="reclaim-title-box">
-              <span class="reclaim-heading">24.8 GB In 7 Cleanable Buckets</span>
+              <span class="reclaim-heading">38.5 GB In Cleanable Buckets</span>
               <span class="reclaim-subtext">Grouped by safety tier with estimated rebuild cost</span>
             </div>
-            <button class="btn btn-sm btn-primary">SELECT ALL TARGETS (24.8 GB)</button>
+            <button class="btn btn-sm btn-primary">SELECT ALL TARGETS (38.5 GB)</button>
           </div>
 
           <div class="mock-targets-list">
@@ -180,10 +180,10 @@
                 <span class="target-path">~/Library/Developer/Xcode/DerivedData</span>
               </div>
               <div class="target-cost">
-                <span class="cost-badge rebuild">⏱ Rebuild: ~3.5 min</span>
+                <span class="cost-badge rebuild">⏱ Rebuild: ~4 min</span>
                 <span class="cost-badge dl">🌐 Redownload: 0 MB</span>
               </div>
-              <span class="target-size">14.2 GB</span>
+              <span class="target-size">18.4 GB</span>
             </div>
 
             <div class="target-row">
@@ -193,10 +193,10 @@
                 <span class="target-path">~/Library/Containers/com.docker.docker</span>
               </div>
               <div class="target-cost">
-                <span class="cost-badge rebuild">⏱ Rebuild: ~45 s</span>
-                <span class="cost-badge dl">🌐 Redownload: ~1.2 GB</span>
+                <span class="cost-badge rebuild">⏱ Rebuild: ~1 min</span>
+                <span class="cost-badge dl">🌐 Redownload: ~2.1 GB</span>
               </div>
-              <span class="target-size">6.4 GB</span>
+              <span class="target-size">12.1 GB</span>
             </div>
 
             <div class="target-row">
@@ -208,7 +208,7 @@
               <div class="target-cost">
                 <span class="cost-badge safe">✓ Safe to recreate</span>
               </div>
-              <span class="target-size">2.8 GB</span>
+              <span class="target-size">5.2 GB</span>
             </div>
 
             <div class="target-row">
@@ -220,7 +220,7 @@
               <div class="target-cost">
                 <span class="cost-badge safe">✓ Stale downloads</span>
               </div>
-              <span class="target-size">1.4 GB</span>
+              <span class="target-size">2.8 GB</span>
             </div>
           </div>
         </div>
@@ -243,7 +243,7 @@
               </div>
               <div class="q-details">
                 <span>Original: ~/Library/Developer/Xcode/DerivedData</span>
-                <span class="q-size">14.2 GB</span>
+                <span class="q-size">18.4 GB</span>
               </div>
               <div class="q-actions">
                 <button class="btn btn-xs btn-outline">↺ 1-Click Restore to Original Path</button>
@@ -256,13 +256,13 @@
     </div>
   </header>
 
-  <!-- Section: The 130 GB Mystery Solved -->
+  <!-- Section: The System Data Mystery Solved -->
   <section id="system-data" class="section">
     <div class="container">
       <div class="section-badge">APFS CONTAINER FORENSICS</div>
-      <h2 class="section-title">The "130 GB System Data" enigma, solved.</h2>
+      <h2 class="section-title">The "System Data" mystery, demystified.</h2>
       <p class="section-subtitle">
-        Every Mac user has opened <em>System Settings &gt; General &gt; Storage</em> only to stare helplessly at a massive 100+ GB gray bar. Here is what Apple doesn't show you:
+        Every Mac user has opened <em>System Settings &gt; General &gt; Storage</em> only to stare helplessly at a massive, opaque gray bar. Here is what macOS is actually storing under the hood:
       </p>
 
       <div class="mystery-grid">
@@ -283,15 +283,15 @@
         <div class="mystery-card">
           <div class="mystery-icon">⚡</div>
           <h3>3. Dynamic VM Swap</h3>
-          <p class="mystery-spec">~2.1 GB to 20 GB • Ephemeral RAM spillover</p>
+          <p class="mystery-spec">~2 GB to 20 GB • Ephemeral RAM spillover</p>
           <p>Apple Silicon's unified memory swaps dynamically into the APFS VM volume. It grows under heavy load and shrinks upon reboot. Not a leak, but vital scratchpad headroom.</p>
         </div>
 
         <div class="mystery-card highlight-card">
           <div class="mystery-icon">💥</div>
           <h3>4. Runaway Developer Caches</h3>
-          <p class="mystery-spec">30 GB to 150+ GB • The Real Culprit</p>
-          <p>Finder lumps Docker raw disks, Xcode DerivedData, Ollama/HuggingFace model weights, Simulator runtimes, and Gradle jars into "System Data" because they live in <code>~/Library</code>. <strong>This is what Headroom reclaims.</strong></p>
+          <p class="mystery-spec">Developer Caches & Artifacts • The Reclaimable Space</p>
+          <p>macOS lumps Docker raw disks, Xcode DerivedData, Ollama/HuggingFace model weights, Simulator runtimes, and Gradle jars into "System Data" because they live in <code>~/Library</code>. <strong>This is what Headroom reclaims.</strong></p>
         </div>
       </div>
     </div>
@@ -437,12 +437,11 @@
 <pre><code><span class="cmd-prompt">$</span> <span class="cmd-run">headroom scan</span>
 🔍 Scanning system and developer caches...
 
-[+] Found 24.8 GB across 7 cleanable targets:
-  <span class="badge-t1">[T1: Safe]</span> Xcode DerivedData:         14.2 GB  (Rebuild: ~3.5 min, DL: 0 MB)
-  <span class="badge-t1">[T1: Safe]</span> CocoaPods Pods Cache:       2.1 GB  (Rebuild: ~1.2 min, DL: ~800 MB)
-  <span class="badge-t2">[T2: Redownload]</span> Docker Dangling Img:  6.4 GB  (Rebuild: ~45 s,   DL: ~1.2 GB)
-  <span class="badge-t1">[T1: Safe]</span> Homebrew Downloads:         1.4 GB  (Rebuild: 0 s,     DL: 0 MB)
-  <span class="badge-t1">[T1: Safe]</span> Gradle Caches:              0.7 GB  (Rebuild: ~2.0 min, DL: ~500 MB)
+[+] Found 38.5 GB across cleanable targets:
+  <span class="badge-t1">[T1: Safe]</span> Xcode DerivedData:         18.4 GB  (Rebuild: ~4.0 min, DL: 0 MB)
+  <span class="badge-t2">[T2: Redownload]</span> Docker Dangling Img: 12.1 GB  (Rebuild: ~1.0 min, DL: ~2.1 GB)
+  <span class="badge-t1">[T1: Safe]</span> iOS Simulator Runtimes:     5.2 GB  (Rebuild: 0 s,     DL: 0 MB)
+  <span class="badge-t1">[T1: Safe]</span> Homebrew Downloads:         2.8 GB  (Rebuild: 0 s,     DL: 0 MB)
 
 ✨ Run <span class="cmd-highlight">headroom clean --dry-run</span> to preview plan or <span class="cmd-highlight">headroom clean</span> to isolate to quarantine.</code></pre>
         </div>
@@ -452,16 +451,16 @@
 ==================================================
            HEADROOM APFS CONTAINER LEDGER          
 ==================================================
-Container Total:        494.4 GB
-Used Allocations:       360.1 GB (72.8%)
-Available Headroom:     134.3 GB (27.2%)
+Container Total:        500.0 GB
+Used Allocations:       320.0 GB (64.0%)
+Available Headroom:     180.0 GB (36.0%)
 
 --- System Volume Breakdown ---
   • Sealed System (SSV): 12.6 GB (Immutable OS)
   • Preboot / Cryptex:    9.0 GB (Boot security)
-  • Dynamic VM Swap:      2.1 GB (RAM spillover)
-  • User Applications:    8.8 GB
-  • Developer & User:   327.6 GB (~24.8 GB cleanable)
+  • Dynamic VM Swap:      2.5 GB (RAM spillover)
+  • User Applications:   25.0 GB
+  • Developer & User:   270.9 GB (~38.5 GB cleanable)
 ==================================================</code></pre>
         </div>
 
@@ -469,14 +468,14 @@ Available Headroom:     134.3 GB (27.2%)
 <pre><code><span class="cmd-prompt">$</span> <span class="cmd-run">headroom clean --dry-run</span>
 ⚡ DRY RUN: Simulating safe cleanup plan...
 
-Target: Xcode DerivedData (14.2 GB) -> Staging to quarantine
-Target: Docker Dangling Img (6.4 GB) -> Staging to quarantine
-Target: Homebrew Downloads (1.4 GB)  -> Staging to quarantine
+Target: Xcode DerivedData (18.4 GB) -> Staging to quarantine
+Target: Docker Dangling Img (12.1 GB) -> Staging to quarantine
+Target: Homebrew Downloads (2.8 GB)  -> Staging to quarantine
 
 Summary:
-  • Total space to reclaim: 22.0 GB
+  • Total space to reclaim: 33.3 GB
   • Files isolated to: ~/.headroom/quarantine/2026-11-18_14-45-00/
-  • Rebuild cost incurred: ~4.2 min CPU compilation, ~1.2 GB re-downloads
+  • Rebuild cost incurred: ~5.0 min CPU compilation, ~2.1 GB re-downloads
   • Instant Undo: headroom undo &lt;record-id&gt;</code></pre>
         </div>
 

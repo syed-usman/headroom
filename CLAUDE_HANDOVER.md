@@ -9,7 +9,7 @@
 
 The author, **Syed Usman** ([@syed-usman](https://github.com/syed-usman)), has engineered and published **Headroom**, a native macOS disk-space reclaimer and APFS forensics utility. 
 
-Unlike traditional "cleaner" utilities that rely on predatory subscriptions, aggressive marketing, and blind `rm -rf` operations, Headroom solves the notorious **"130 GB System Data"** black box on macOS using native APFS block-level container forensics, a rebuild-cost safety engine, and a 7-day reversible quarantine vault.
+Unlike traditional "cleaner" utilities that rely on predatory subscriptions, aggressive marketing, and blind `rm -rf` operations, Headroom solves the notorious **"System Data"** black box on macOS using native APFS block-level container forensics, a rebuild-cost safety engine, and a 7-day reversible quarantine vault.
 
 ### Core Project Links
 - **GitHub Repository:** [https://github.com/syed-usman/headroom](https://github.com/syed-usman/headroom)
@@ -86,8 +86,8 @@ Claude should assess the current blog/website stack (e.g. Next.js, Astro, Hugo, 
 
 **Article Outline & Key Talking Points:**
 
-1. **The Frustration: The 130 GB Mystery**
-   - The common Mac developer experience: 512 GB SSD filling up, System Settings displaying 130 GB of "System Data" with no delete button or explanation.
+1. **The Frustration: The Opaque "System Data" Black Box**
+   - The common Mac user and developer experience: SSD filling up, System Settings displaying massive chunks of "System Data" with no delete button or explanation.
    - Why traditional visualizers (DaisyDisk, GrandPerspective) fall short: they visualize folder size but have no domain knowledge of developer toolchains or APFS snapshots.
 
 2. **Reverse Engineering APFS Container Topology**
