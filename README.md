@@ -13,7 +13,11 @@ Headroom is an open-source APFS disk analysis and space reclamation tool for mac
 
 ### Direct Download
 Download the latest DMG release:
-- `Headroom.dmg` (macOS 14.0+)
+- **[Headroom.dmg](https://github.com/syed-usman/headroom/releases/latest)** (macOS 14.0+)
+
+> **Note on macOS Gatekeeper:** Because Headroom is distributed outside the Mac App Store without an Apple Developer ID, macOS Gatekeeper may show a security check on first launch. If prompted:
+> - Click **"Open Anyway"** in **System Settings &gt; Privacy &amp; Security**, or
+> - Run `xattr -cr /Applications/Headroom.app` in Terminal to clear the browser download quarantine.
 
 ### Building from Source
 

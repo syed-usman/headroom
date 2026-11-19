@@ -29,6 +29,10 @@ if [ -f "Resources/AppIcon.icns" ]; then
     cp Resources/AppIcon.icns Headroom.app/Contents/Resources/AppIcon.icns
 fi
 
+# 6. Clean attributes & code sign bundle
+xattr -cr Headroom.app 2>/dev/null || true
+codesign --force --deep --sign - Headroom.app
+
 echo "✅ Build succeeded!"
 echo "   CLI: .build/headroom"
 echo "   App: Headroom.app (open with 'open Headroom.app')"
