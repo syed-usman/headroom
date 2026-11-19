@@ -79,9 +79,21 @@
         </a>
       </div>
 
+      <!-- One-line terminal installer (Bypasses Gatekeeper without Developer Account) -->
+      <div class="install-cmd-container">
+        <span class="cmd-label">Or install via Terminal (skips Gatekeeper warnings):</span>
+        <div class="terminal-copy-box" onclick="copyInstallCmd()">
+          <span class="prompt">$</span>
+          <code id="install-cmd">curl -fsSL https://syed-usman.github.io/headroom/install.sh | bash</code>
+          <button class="copy-btn" title="Copy to clipboard" aria-label="Copy command">
+            <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+
       <div class="gatekeeper-tip">
         <span class="tip-icon">💡</span>
-        <span><strong>First-time launch on macOS:</strong> Because Headroom is distributed directly without Apple Developer ID notarization, macOS Gatekeeper may show a warning. Simply click <em>"Open Anyway"</em> in <strong>System Settings &gt; Privacy &amp; Security</strong>, or run <code>xattr -cr /Applications/Headroom.app</code>.</span>
+        <span><strong>DMG First-Time Launch:</strong> If downloading the DMG in a web browser, macOS may show a security check. You can click <em>"Open Anyway"</em> in <strong>System Settings &gt; Privacy &amp; Security</strong>, or use the terminal command above to install and open directly without warnings.</span>
       </div>
 
       <!-- Trust Badges -->
